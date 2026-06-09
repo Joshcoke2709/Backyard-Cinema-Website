@@ -1,0 +1,534 @@
+:root {
+  --ink: #10090b;
+  --panel: #211b1d;
+  --cream: #fff4d8;
+  --gold: #ffd166;
+  --red: #d90429;
+  --red-dark: #8f0718;
+  --muted: #b9ad9b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background: #1f1a1c;
+  color: var(--cream);
+}
+
+.custom-navbar {
+  background: rgba(12, 7, 8, 0.96);
+  border: 0;
+  border-radius: 0;
+  margin-bottom: 0;
+  min-height: 74px;
+  box-shadow: 0 12px 35px rgba(0, 0, 0, 0.35);
+}
+
+.custom-navbar .container-fluid {
+  max-width: 1440px;
+  padding: 12px 28px;
+}
+
+.custom-navbar .navbar-brand,
+.custom-navbar .navbar-nav > li > a,
+.custom-navbar .navbar-text {
+  color: var(--cream) !important;
+  font-weight: 700;
+}
+
+.custom-navbar .navbar-nav > li > a {
+  border-radius: 999px;
+  margin: 4px 2px;
+}
+
+.custom-navbar .navbar-nav > li > a:hover,
+.custom-navbar .navbar-brand:hover {
+  color: var(--gold) !important;
+  background-color: rgba(255, 209, 102, 0.09) !important;
+}
+
+.custom-navbar .navbar-toggle {
+  border-color: rgba(255, 209, 102, 0.5);
+  margin-top: 12px;
+}
+
+.custom-navbar .navbar-toggle .icon-bar {
+  background-color: var(--gold);
+}
+
+.custom-navbar .navbar-toggle:hover,
+.custom-navbar .navbar-toggle:focus {
+  background: rgba(255, 209, 102, 0.12);
+}
+
+.brand-logo {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  height: auto;
+  padding-top: 8px;
+  font-size: 22px;
+  letter-spacing: 0.5px;
+}
+
+.popcorn-mark {
+  position: relative;
+  width: 35px;
+  height: 38px;
+  display: inline-block;
+  background: repeating-linear-gradient(90deg, #fff4d8 0 7px, #d90429 7px 14px);
+  border: 2px solid var(--gold);
+  border-radius: 7px 7px 11px 11px;
+}
+
+.popcorn-mark::before {
+  content: "";
+  position: absolute;
+  left: 3px;
+  top: -10px;
+  width: 9px;
+  height: 9px;
+  background: var(--gold);
+  border-radius: 50%;
+  box-shadow: 9px -4px 0 #fff4d8, 18px 0 0 var(--gold);
+}
+
+.popcorn-mark span {
+  position: absolute;
+  left: 8px;
+  right: 8px;
+  bottom: 5px;
+  height: 4px;
+  background: var(--ink);
+  border-radius: 999px;
+}
+
+.schedule-hero {
+  min-height: 300px;
+  display: flex;
+  align-items: end;
+  padding: 48px 5vw;
+  background:
+    linear-gradient(90deg, rgba(16, 9, 11, 0.98), rgba(16, 9, 11, 0.72), rgba(143, 7, 24, 0.48)),
+    url("https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?auto=format&fit=crop&w=1800&q=80") center/cover;
+  border-bottom: 1px solid rgba(255, 209, 102, 0.25);
+}
+
+.eyebrow {
+  margin: 0 0 12px;
+  color: var(--gold);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0;
+}
+
+.belownav {
+  margin: 0;
+  color: #fff;
+  font-size: clamp(42px, 7vw, 86px);
+  line-height: 0.95;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.hero-copy {
+  max-width: 640px;
+  margin: 18px 0 0;
+  color: var(--cream);
+  font-size: 19px;
+}
+
+.showtimes-page {
+  width: min(90%, 1500px);
+  margin: 0 auto;
+  padding: 44px 0 70px;
+}
+
+.showtimes-control {
+  padding-bottom: 34px;
+  border-bottom: 1px solid rgba(255, 244, 216, 0.18);
+}
+
+.showtimes-heading {
+  text-align: center;
+  margin-bottom: 36px;
+}
+
+.showtimes-heading h2 {
+  margin: 0 0 14px;
+  color: #fff;
+  font-size: clamp(40px, 5vw, 62px);
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.showtimes-heading p {
+  margin: 0;
+  color: var(--cream);
+  font-size: 17px;
+}
+
+.schedule-filter {
+  display: grid;
+  grid-template-columns: minmax(180px, 1.2fr) minmax(180px, 1fr) auto auto;
+  gap: 14px;
+  align-items: center;
+  margin: 0 0 34px;
+  padding: 18px;
+  border: 1px solid rgba(255, 209, 102, 0.32);
+  border-radius: 8px;
+  background: rgba(16, 9, 11, 0.38);
+}
+
+.schedule-filter input,
+.schedule-filter select {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid rgba(255, 209, 102, 0.36);
+  border-radius: 6px;
+  background: rgba(255, 244, 216, 0.96);
+  color: var(--ink);
+  padding: 0 14px;
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.schedule-filter button,
+.clear-filter {
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  padding: 0 22px;
+  background: var(--red);
+  color: #fff !important;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-decoration: none !important;
+}
+
+.clear-filter {
+  background: var(--gold);
+  color: var(--ink) !important;
+}
+
+.calendar-row {
+  display: grid;
+  grid-template-columns: 145px minmax(0, 1fr);
+  gap: 18px;
+  align-items: center;
+}
+
+.now-playing-label {
+  display: inline-block;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--gold);
+  color: #fff;
+  font-size: 25px;
+  line-height: 1;
+}
+
+.date-scroller {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(150px, 1fr);
+  gap: 8px;
+  overflow-x: auto;
+  padding: 2px 2px 12px;
+  scrollbar-color: var(--gold) transparent;
+}
+
+.date-tile {
+  min-height: 74px;
+  display: grid;
+  place-items: center;
+  padding: 10px 18px;
+  border: 2px solid rgba(255, 209, 102, 0.75);
+  border-radius: 7px;
+  color: #fff;
+  text-align: center;
+  text-decoration: none !important;
+  background: rgba(16, 9, 11, 0.18);
+}
+
+.date-tile span {
+  font-weight: 900;
+  line-height: 1;
+}
+
+.date-tile strong {
+  font-size: 28px;
+  line-height: 1;
+}
+
+.date-tile:hover,
+.date-tile.active {
+  background: var(--gold);
+  color: var(--ink);
+}
+
+.movieschedule-section {
+  margin-top: 48px;
+}
+
+.schedule-list {
+  display: grid;
+  gap: 38px;
+}
+
+.schedule-movie-card {
+  display: grid;
+  grid-template-columns: 188px minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+  padding: 4px 0 36px;
+  border-bottom: 1px solid rgba(255, 244, 216, 0.16);
+}
+
+.schedule-poster {
+  width: 188px;
+  aspect-ratio: 2 / 3;
+  object-fit: cover;
+  border-radius: 8px;
+  background: #090506;
+  box-shadow: 0 18px 38px rgba(0, 0, 0, 0.35);
+}
+
+.schedule-copy h3 {
+  margin: 8px 0 46px;
+  color: #fff;
+  font-size: clamp(32px, 4vw, 46px);
+  line-height: 1;
+  font-weight: 400;
+}
+
+.schedule-facts {
+  display: grid;
+  gap: 10px;
+  margin: 0 0 24px;
+}
+
+.schedule-facts div {
+  display: grid;
+  grid-template-columns: 116px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+}
+
+.schedule-facts dt,
+.schedule-facts dd {
+  margin: 0;
+  color: #fff;
+  font-size: 18px;
+}
+
+.schedule-facts dt {
+  font-weight: 900;
+}
+
+.schedule-facts dd {
+  font-weight: 500;
+}
+
+.schedule-time {
+  display: inline-flex;
+  align-items: center;
+  min-height: 38px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+}
+
+.movie-detail-box {
+  display: flex;
+  gap: 14px;
+  align-items: flex-start;
+  margin-top: 26px;
+  padding: 22px 24px;
+  border: 1px solid rgba(255, 209, 102, 0.86);
+  border-radius: 18px;
+  color: #fff;
+}
+
+.movie-detail-box p {
+  margin: 0;
+  color: #fff;
+  font-size: 17px;
+  line-height: 1.7;
+}
+
+.buy-ticket-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  margin-top: 18px;
+  padding: 10px 22px;
+  border-radius: 999px;
+  background: var(--red);
+  color: #fff !important;
+  font-weight: 900;
+  text-transform: uppercase;
+  text-decoration: none !important;
+}
+
+.buy-ticket-btn:hover {
+  background: var(--gold);
+  color: var(--ink) !important;
+}
+
+.rating-badge {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  min-height: 30px;
+  padding: 6px 12px;
+  border-radius: 5px;
+  background: #050505;
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-weight: 900;
+  font-size: 12px;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.empty-state {
+  margin: 0;
+  padding: 24px;
+  border: 1px solid rgba(255, 209, 102, 0.45);
+  border-radius: 8px;
+  background: rgba(16, 9, 11, 0.2);
+  color: var(--cream);
+  font-weight: 800;
+}
+
+@media screen and (max-width: 900px) {
+  .custom-navbar .container-fluid {
+    padding: 10px 16px;
+  }
+
+  .custom-navbar .navbar-header {
+    float: none;
+  }
+
+  .custom-navbar .navbar-toggle {
+    display: block;
+  }
+
+  .custom-navbar .navbar-collapse {
+    border-top: 1px solid rgba(255, 209, 102, 0.18);
+    box-shadow: none;
+    padding: 10px 0 4px;
+  }
+
+  .custom-navbar .navbar-collapse.collapse {
+    display: none !important;
+  }
+
+  .custom-navbar .navbar-collapse.collapse.in {
+    display: block !important;
+  }
+
+  .custom-navbar .navbar-nav {
+    float: none !important;
+    margin: 8px 0;
+  }
+
+  .custom-navbar .navbar-nav > li {
+    float: none;
+  }
+
+  .custom-navbar .navbar-nav > li > a,
+  .custom-navbar .navbar-text {
+    display: block;
+    margin: 4px 0;
+    padding: 11px 14px;
+  }
+
+  .custom-navbar .navbar-right {
+    float: none !important;
+  }
+
+  .custom-navbar .dropdown-menu {
+    position: static;
+    float: none;
+    width: auto;
+    margin: 0 0 8px 18px;
+    background: rgba(16, 9, 11, 0.96);
+    border: 1px solid rgba(255, 209, 102, 0.18);
+    box-shadow: none;
+  }
+
+  .custom-navbar .dropdown-menu > li > a {
+    color: var(--cream);
+    padding: 10px 14px;
+  }
+
+  .custom-navbar .dropdown-menu > li > a:hover {
+    color: var(--gold);
+    background: rgba(255, 209, 102, 0.09);
+  }
+
+  .schedule-hero {
+    min-height: 260px;
+    padding: 36px 24px;
+  }
+
+  .calendar-row {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-filter {
+    grid-template-columns: 1fr;
+  }
+
+  .date-scroller {
+    grid-auto-columns: 132px;
+  }
+
+  .schedule-movie-card {
+    grid-template-columns: 124px minmax(0, 1fr);
+    gap: 22px;
+  }
+
+  .schedule-poster {
+    width: 124px;
+  }
+
+  .schedule-copy h3 {
+    margin-bottom: 22px;
+  }
+
+  .schedule-facts div {
+    grid-template-columns: 1fr;
+    gap: 4px;
+  }
+
+  .movie-detail-box {
+    flex-direction: column;
+  }
+}
+
+@media screen and (max-width: 560px) {
+  .showtimes-page {
+    width: 92%;
+  }
+
+  .schedule-movie-card {
+    grid-template-columns: 1fr;
+  }
+
+  .schedule-poster {
+    width: min(220px, 100%);
+  }
+}
