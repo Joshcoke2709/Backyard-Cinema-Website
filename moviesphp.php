@@ -659,11 +659,14 @@ require_once "conn.php";
           ];
         }
 
-        $todayMovies[$movieKey]['showtimes'][] = [
-          'ScheduleID' => (int)$row['ScheduleID'],
-          'Cinema' => $row['Cinema'],
-          'ShowTime' => $row['ShowTime']
-        ];
+        $existingTimes = array_column($todayMovies[$movieKey]['showtimes'], 'ShowTime');
+        if (!in_array($row['ShowTime'], $existingTimes, true)) {
+          $todayMovies[$movieKey]['showtimes'][] = [
+            'ScheduleID' => (int)$row['ScheduleID'],
+            'Cinema' => $row['Cinema'],
+            'ShowTime' => $row['ShowTime']
+          ];
+        }
       }
     }
   ?>

@@ -262,10 +262,13 @@ if ($result) {
             ];
         }
 
-        $scheduledMovies[$scheduleKey]['showtimes'][] = [
-            'ScheduleID' => (int)$row['ScheduleID'],
-            'ShowTime' => $row['ShowTime']
-        ];
+        $existingTimes = array_column($scheduledMovies[$scheduleKey]['showtimes'], 'ShowTime');
+        if (!in_array($row['ShowTime'], $existingTimes, true)) {
+            $scheduledMovies[$scheduleKey]['showtimes'][] = [
+                'ScheduleID' => (int)$row['ScheduleID'],
+                'ShowTime' => $row['ShowTime']
+            ];
+        }
     }
 }
 ?>
