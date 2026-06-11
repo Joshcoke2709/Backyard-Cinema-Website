@@ -203,14 +203,20 @@ require_once "conn.php";
 
     const firstCard = carousel.firstElementChild;
     const gap = parseFloat(window.getComputedStyle(carousel).gap) || 0;
-    const scrollAmount = firstCard ? firstCard.getBoundingClientRect().width + gap : carousel.clientWidth;
+    const scrollAmount = carouselId === "nowShowingCarousel"
+      ? carousel.clientWidth
+      : (firstCard ? firstCard.getBoundingClientRect().width + gap : carousel.clientWidth);
     const maxScroll = carousel.scrollWidth - carousel.clientWidth;
-    let nextLeft = carousel.scrollLeft + (direction * scrollAmount);
+    let nextLeft;
 
-    if (nextLeft > maxScroll - 4) {
-      nextLeft = 0;
-    } else if (nextLeft < 0) {
-      nextLeft = maxScroll;
+    if (direction > 0) {
+      nextLeft = carousel.scrollLeft >= maxScroll - 4
+        ? 0
+        : Math.min(carousel.scrollLeft + scrollAmount, maxScroll);
+    } else {
+      nextLeft = carousel.scrollLeft <= 4
+        ? maxScroll
+        : Math.max(carousel.scrollLeft - scrollAmount, 0);
     }
 
     carousel.scrollTo({
@@ -536,11 +542,30 @@ require_once "conn.php";
 
       <?php 
         require_once "conn.php";
-        $sql_query = "SELECT MovieID, MovieName, Rating, PosterURL
-              FROM movie
-              ORDER BY MovieName";
+        $todayDate = date('Y-m-d');
 
-            if ($result = $conn->query($sql_query)) {
+        if ($isStaff) {
+          $sql_query = "SELECT MovieID, MovieName, Rating, PosterURL
+                        FROM movie
+                        ORDER BY MovieName";
+          $result = $conn->query($sql_query);
+        } else {
+          $sql_query = "SELECT m.MovieID, m.MovieName, m.Rating, m.PosterURL
+                        FROM movie m
+                        WHERE EXISTS (
+                          SELECT 1
+                          FROM schedule s
+                          WHERE s.MovieID = m.MovieID
+                            AND s.ShowDate >= ?
+                        )
+                        ORDER BY m.MovieName";
+          $nowShowingStmt = $conn->prepare($sql_query);
+          $nowShowingStmt->bind_param("s", $todayDate);
+          $nowShowingStmt->execute();
+          $result = $nowShowingStmt->get_result();
+        }
+
+            if ($result) {
               while ($row = $result->fetch_assoc()) {
                 $movie = $row["MovieName"];
                 $movieID = $row["MovieID"];
@@ -548,7 +573,6 @@ require_once "conn.php";
                 $poster = get_working_poster($conn, (int)$movieID, $movie, $row["PosterURL"], 345, 330);
                 $posterFallback = "https://placehold.co/345x330/160b0d/ffd166?text=" . urlencode($movie);
                 $nextScheduleID = null;
-                $todayDate = date('Y-m-d');
                 $nextScheduleSql = "SELECT ScheduleID FROM schedule WHERE MovieID = ? AND ShowDate >= ? ORDER BY ShowDate, ShowTime LIMIT 1";
                 $nextScheduleStmt = $conn->prepare($nextScheduleSql);
                 $nextScheduleStmt->bind_param("is", $movieID, $todayDate);
