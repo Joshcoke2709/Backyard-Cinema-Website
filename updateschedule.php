@@ -170,6 +170,7 @@ if (isset($_POST['add_schedule'])) {
 $moviesSql = "SELECT MovieID, MovieName, Rating FROM movie ORDER BY MovieName";
 $moviesResult = $conn->query($moviesSql);
 $scheduleFilterMovieID = isset($_GET['schedule_movie_id']) ? (int)$_GET['schedule_movie_id'] : 0;
+$selectedMovieID = isset($_POST['movie_id']) ? (int)$_POST['movie_id'] : $scheduleFilterMovieID;
 $scheduleSearchTerm = isset($_GET['schedule_search']) ? trim($_GET['schedule_search']) : "";
 
 // separate query for sidebar so pointer doesn't get consumed
@@ -559,7 +560,7 @@ $editMoviesResult = $conn->query($moviesSql);
                     <?php if ($moviesResult && $moviesResult->num_rows > 0): ?>
                         <?php while ($movieRow = $moviesResult->fetch_assoc()): ?>
                             <option value="<?php echo $movieRow['MovieID']; ?>"
-                                <?php if (isset($_POST['movie_id']) && $_POST['movie_id'] == $movieRow['MovieID']) echo 'selected'; ?>>
+                                <?php if ($selectedMovieID === (int)$movieRow['MovieID']) echo 'selected'; ?>>
                                 <?php echo htmlspecialchars($movieRow['MovieName']); ?> (<?php echo htmlspecialchars($movieRow['Rating']); ?>)
                             </option>
                         <?php endwhile; ?>

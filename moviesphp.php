@@ -609,6 +609,8 @@ require_once "conn.php";
               <div class="staff-actions">
                 <a class="btn btn-warning btn-sm" href="editmovie.php?movie_id=<?php echo urlencode($movieID); ?>">Edit Movie</a>
 
+                <a class="btn btn-warning btn-sm" href="updateschedule.php?schedule_movie_id=<?php echo urlencode($movieID); ?>">Edit Schedule</a>
+
                 <a class="btn btn-danger btn-sm" href="deletemovie.php?movie_id=<?php echo urlencode($movieID); ?>" onclick="return confirm('Delete this movie and all of its scheduled showtimes?');">Delete</a>
               </div>
               <?php endif; ?>
