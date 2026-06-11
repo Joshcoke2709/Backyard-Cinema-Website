@@ -377,5 +377,20 @@ if ($result) {
 
 <?php $stmt->close(); ?>
 
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  const dateScroller = document.querySelector(".date-scroller");
+  const activeDate = dateScroller ? dateScroller.querySelector(".date-tile.active") : null;
+
+  if (!dateScroller || !activeDate) {
+    return;
+  }
+
+  requestAnimationFrame(function () {
+    dateScroller.scrollLeft = Math.max(0, activeDate.offsetLeft - dateScroller.offsetLeft);
+  });
+});
+</script>
+
 </body>
 </html>
