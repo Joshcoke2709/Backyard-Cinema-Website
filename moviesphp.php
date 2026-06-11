@@ -703,7 +703,6 @@ require_once "conn.php";
                     <?php foreach ($todayMovie['showtimes'] as $showtime): ?>
                       <a class="time-pill" href="buyticket.php?movie_id=<?php echo urlencode($movieID); ?>&schedule_id=<?php echo urlencode($showtime['ScheduleID']); ?>">
                         <?php echo date('h:i A', strtotime($showtime['ShowTime'])); ?>
-                        <small><?php echo htmlspecialchars($showtime['Cinema']); ?></small>
                       </a>
                     <?php endforeach; ?>
                   </dd>
@@ -712,7 +711,7 @@ require_once "conn.php";
 
               <div class="today-detail-box">
                 <span class="movie-age-rating"><?php echo htmlspecialchars($rating); ?></span>
-                <p>Movie details: This showing is rated <?php echo htmlspecialchars($rating); ?>. Please check that the rating is suitable before booking tickets.</p>
+                <p>This showing is rated <?php echo htmlspecialchars($rating); ?>. Please check that the rating is suitable before booking tickets.</p>
               </div>
 
               <button class="btn view-btn btn-sm" onclick='openForm("<?php echo htmlspecialchars($movie, ENT_QUOTES); ?>")'>

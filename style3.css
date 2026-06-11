@@ -339,13 +339,33 @@ body {
 .schedule-time {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 38px;
+  min-width: 112px;
   padding: 8px 16px;
   border-radius: 999px;
-  background: var(--red);
-  color: #fff;
+  background: linear-gradient(to right, var(--red) 50%, var(--gold) 50%);
+  background-position: right bottom;
+  background-size: 205% 100%;
+  color: var(--ink) !important;
   font-size: 16px;
   font-weight: 900;
+  text-decoration: none !important;
+  transition: background-position 0.55s ease, color 0.4s ease;
+}
+
+.schedule-showtime-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.schedule-time:hover,
+.schedule-time:focus {
+  background-position: left bottom;
+  color: #fff !important;
+  text-decoration: none !important;
+  outline: none;
 }
 
 .movie-detail-box {

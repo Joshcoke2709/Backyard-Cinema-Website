@@ -245,6 +245,29 @@ foreach ($params as $key => $value) {
 call_user_func_array([$stmt, 'bind_param'], $bindValues);
 $stmt->execute();
 $result = $stmt->get_result();
+
+$scheduledMovies = [];
+if ($result) {
+    while ($row = $result->fetch_assoc()) {
+        $scheduleKey = (int)$row['MovieID'] . '|' . $row['ShowDate'];
+
+        if (!isset($scheduledMovies[$scheduleKey])) {
+            $scheduledMovies[$scheduleKey] = [
+                'MovieID' => (int)$row['MovieID'],
+                'MovieName' => $row['MovieName'],
+                'Rating' => $row['Rating'],
+                'PosterURL' => $row['PosterURL'],
+                'ShowDate' => $row['ShowDate'],
+                'showtimes' => []
+            ];
+        }
+
+        $scheduledMovies[$scheduleKey]['showtimes'][] = [
+            'ScheduleID' => (int)$row['ScheduleID'],
+            'ShowTime' => $row['ShowTime']
+        ];
+    }
+}
 ?>
 
 <main class="showtimes-page">
@@ -302,47 +325,49 @@ $result = $stmt->get_result();
 
   <section class="movieschedule-section">
     <div class="schedule-list">
-      <?php if ($result->num_rows > 0): ?>
-        <?php while ($row = $result->fetch_assoc()):
-          $poster = get_working_poster($conn, (int)$row["MovieID"], $row["MovieName"], $row["PosterURL"]);
-          $posterFallback = "https://placehold.co/220x330/160b0d/ffd166?text=" . urlencode($row["MovieName"]);
-          $rating = !empty($row["Rating"]) ? $row["Rating"] : "NR";
+      <?php if (!empty($scheduledMovies)): ?>
+        <?php foreach ($scheduledMovies as $scheduledMovie):
+          $poster = get_working_poster($conn, $scheduledMovie["MovieID"], $scheduledMovie["MovieName"], $scheduledMovie["PosterURL"]);
+          $posterFallback = "https://placehold.co/220x330/160b0d/ffd166?text=" . urlencode($scheduledMovie["MovieName"]);
+          $rating = !empty($scheduledMovie["Rating"]) ? $scheduledMovie["Rating"] : "NR";
         ?>
           <article class="schedule-movie-card">
-            <img src="<?php echo htmlspecialchars($poster); ?>" alt="<?php echo htmlspecialchars($row["MovieName"]); ?>" class="schedule-poster" onerror="this.onerror=null;this.src='<?php echo htmlspecialchars($posterFallback); ?>';">
+            <img src="<?php echo htmlspecialchars($poster); ?>" alt="<?php echo htmlspecialchars($scheduledMovie["MovieName"]); ?>" class="schedule-poster" onerror="this.onerror=null;this.src='<?php echo htmlspecialchars($posterFallback); ?>';">
 
             <div class="schedule-copy">
-              <h3><?php echo htmlspecialchars($row["MovieName"]); ?></h3>
+              <h3><?php echo htmlspecialchars($scheduledMovie["MovieName"]); ?></h3>
 
               <dl class="schedule-facts">
                 <div>
                   <dt>Show Date:</dt>
-                  <dd><?php echo date('l, F j, Y', strtotime($row["ShowDate"])); ?></dd>
+                  <dd><?php echo date('l, F j, Y', strtotime($scheduledMovie["ShowDate"])); ?></dd>
                 </div>
                 <div>
-                  <dt>Show Time:</dt>
-                  <dd><span class="schedule-time"><?php echo date('h:i A', strtotime($row["ShowTime"])); ?></span></dd>
-                </div>
-                <div>
-                  <dt>Cinema:</dt>
-                  <dd><?php echo htmlspecialchars($row["Cinema"]); ?></dd>
+                  <dt>Showtimes:</dt>
+                  <dd class="schedule-showtime-links">
+                    <?php foreach ($scheduledMovie['showtimes'] as $showtime): ?>
+                      <a class="schedule-time" href="buyticket.php?movie_id=<?php echo urlencode($scheduledMovie['MovieID']); ?>&schedule_id=<?php echo urlencode($showtime['ScheduleID']); ?>">
+                        <?php echo date('h:i A', strtotime($showtime['ShowTime'])); ?>
+                      </a>
+                    <?php endforeach; ?>
+                  </dd>
                 </div>
               </dl>
 
               <div class="movie-detail-box">
                 <span class="rating-badge"><?php echo htmlspecialchars($rating); ?></span>
                 <p>
-                  Movie details: This showing is rated <?php echo htmlspecialchars($rating); ?>.
+                  This showing is rated <?php echo htmlspecialchars($rating); ?>.
                   Please check that the rating is suitable before booking tickets.
                 </p>
               </div>
 
-              <a class="btn buy-ticket-btn" href="buyticket.php?movie_id=<?php echo urlencode($row['MovieID']); ?>&schedule_id=<?php echo urlencode($row['ScheduleID']); ?>">
+              <a class="btn buy-ticket-btn" href="buyticket.php?movie_id=<?php echo urlencode($scheduledMovie['MovieID']); ?>&schedule_id=<?php echo urlencode($scheduledMovie['showtimes'][0]['ScheduleID']); ?>">
                 Buy Tickets
               </a>
             </div>
           </article>
-        <?php endwhile; ?>
+        <?php endforeach; ?>
       <?php else: ?>
         <p class="empty-state">No movies scheduled for <?php echo date('l, F j, Y', strtotime($selectedDate)); ?>.</p>
       <?php endif; ?>
