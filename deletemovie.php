@@ -24,10 +24,11 @@ if ($movieID <= 0) {
     die("Movie not found.");
 }
 
-/* Delete the movie everywhere: first its schedule rows, then the movie record. */
+// A transaction makes both deletes succeed together or fail together.
 $conn->begin_transaction();
 
 try {
+    // Child schedule rows must be removed before their parent movie row.
     $deleteScheduleSql = "DELETE FROM schedule WHERE MovieID = ?";
     $deleteScheduleStmt = $conn->prepare($deleteScheduleSql);
     $deleteScheduleStmt->bind_param("i", $movieID);

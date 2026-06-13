@@ -6,7 +6,7 @@ $message = "";
 $messageClass = "";
 $newSupervisorID = null;
 
-/* ADD SUPERVISOR */
+// Add a supervisor after checking that the employee name is unique.
 if (isset($_POST['add_supervisor'])) {
     $empName = trim($_POST['emp_name']);
     $password = trim($_POST['password']);
@@ -42,7 +42,7 @@ if (isset($_POST['add_supervisor'])) {
     }
 }
 
-/* RESET PASSWORD */
+// Administrators can reset supervisor passwords by employee ID.
 if (isset($_POST['reset_password'])) {
     $empID = (int)$_POST['emp_id'];
     $newPassword = trim($_POST['new_password']);
@@ -65,7 +65,7 @@ if (isset($_POST['reset_password'])) {
     }
 }
 
-/* DELETE SUPERVISOR */
+// The role condition prevents this action from deleting an administrator.
 if (isset($_GET['delete'])) {
     $empID = (int)$_GET['delete'];
 
@@ -87,7 +87,7 @@ if (isset($_GET['delete'])) {
     }
 }
 
-/* LOAD SUPERVISORS */
+// Load the current supervisor list for the maintenance table.
 $supervisorSql = "SELECT EmpID, EmpName, Role FROM employee WHERE Role = 'supervisor' ORDER BY EmpName";
 $supervisorResult = $conn->query($supervisorSql);
 ?>

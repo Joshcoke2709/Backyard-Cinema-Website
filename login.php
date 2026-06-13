@@ -6,11 +6,13 @@ $message = "";
 $messageClass = "error-message";
 $next = isset($_GET['next']) ? trim($_GET['next']) : "moviesphp.php";
 
+// Only allow local redirect paths after login, not external web addresses.
 if ($next === "" || preg_match('/^https?:\/\//i', $next)) {
     $next = "moviesphp.php";
 }
 
 function login_patron($row) {
+    // Store the logged-in patron's identity and role in the session.
     $_SESSION['patron_id'] = $row['PatronID'];
     $_SESSION['patron_name'] = $row['PatronName'];
     $_SESSION['patron_email'] = $row['Email'];
@@ -29,6 +31,7 @@ if (isset($_POST['login'])) {
     if ($identifier === "" || $password === "") {
         $message = "Please enter your login details.";
     } elseif (ctype_digit($identifier)) {
+        // Numeric identifiers are treated as employee IDs.
         $sql = "SELECT EmpID, EmpName, Password, Role FROM employee WHERE EmpID = ?";
         $stmt = $conn->prepare($sql);
         $empid = (int)$identifier;
@@ -49,6 +52,7 @@ if (isset($_POST['login'])) {
 
         $message = "Incorrect staff login details.";
     } else {
+        // Email identifiers are treated as patron accounts.
         $sql = "SELECT PatronID, PatronName, Email, Password FROM patron WHERE Email = ? LIMIT 1";
         $stmt = $conn->prepare($sql);
         $stmt->bind_param("s", $identifier);
@@ -71,6 +75,7 @@ if (isset($_POST['login'])) {
 }
 
 if (isset($_POST['register'])) {
+    // Validate a new patron account before inserting it.
     $patronName = trim($_POST['patron_name']);
     $email = trim($_POST['email']);
     $password = trim($_POST['new_password']);
@@ -85,6 +90,7 @@ if (isset($_POST['register'])) {
     } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $message = "Please enter a valid email address.";
     } else {
+        // Prepared statements keep the email separate from the SQL command.
         $checkSql = "SELECT PatronID FROM patron WHERE Email = ? LIMIT 1";
         $checkStmt = $conn->prepare($checkSql);
         $checkStmt->bind_param("s", $email);
@@ -94,6 +100,7 @@ if (isset($_POST['register'])) {
         if ($checkResult->fetch_assoc()) {
             $message = "An account already exists with that email.";
         } else {
+            // Patrons' passwords are stored as secure hashes, not plain text.
             $passwordHash = password_hash($password, PASSWORD_DEFAULT);
             $insertSql = "INSERT INTO patron (PatronName, Email, Password) VALUES (?, ?, ?)";
             $insertStmt = $conn->prepare($insertSql);

@@ -23,6 +23,7 @@ if ($movieID <= 0) {
 }
 
 if (isset($_POST['update_movie'])) {
+    // Movie editing changes the title only; rating remains API-controlled.
     $movieName = trim($_POST['movie_name']);
 
     if ($movieName === "") {
@@ -51,6 +52,7 @@ if (!$movie) {
     die("Movie not found.");
 }
 
+// Show upcoming schedules beside the form for staff reference.
 $scheduledSql = "SELECT s.ScheduleID, m.MovieName, m.Rating, s.Cinema, s.ShowDate, s.ShowTime, s.IsFeatured
                  FROM schedule s
                  INNER JOIN movie m ON s.MovieID = m.MovieID

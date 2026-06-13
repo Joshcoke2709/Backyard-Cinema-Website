@@ -21,6 +21,7 @@ if (!empty($queryParts)) {
     $nextUrl .= "?" . implode("&", $queryParts);
 }
 
+// Buying requires a patron account; preserve the requested movie for after login.
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'patron' || !isset($_SESSION['patron_id'])) {
     header("Location: login.php?next=" . urlencode($nextUrl));
     exit();
@@ -29,6 +30,7 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'patron' || !isset($_SESS
 $todayDate = date('Y-m-d');
 
 if ($requestedScheduleID > 0) {
+    // A selected showtime tells us which movie should be loaded.
     $findMovieSql = "SELECT MovieID FROM schedule WHERE ScheduleID = ? LIMIT 1";
     $findMovieStmt = $conn->prepare($findMovieSql);
     $findMovieStmt->bind_param("i", $requestedScheduleID);
@@ -75,6 +77,7 @@ if (empty($movieSchedules)) {
 }
 
 $scheduleID = $requestedScheduleID;
+// Build an allow-list so a posted schedule ID must belong to this movie.
 $validScheduleIDs = array_map(function ($row) {
     return (int)$row['ScheduleID'];
 }, $movieSchedules);
@@ -103,6 +106,7 @@ $messageClass = "";
 $ticketPrice = 1500.00;
 
 if (isset($_POST['purchase_ticket'])) {
+    // This is a classroom payment simulation; only the final four digits are stored.
     $quantity = (int)$_POST['quantity'];
     $cardName = trim($_POST['card_name']);
     $cardNumber = preg_replace('/\D/', '', $_POST['card_number']);
@@ -120,6 +124,7 @@ if (isset($_POST['purchase_ticket'])) {
         $last4 = substr($cardNumber, -4);
         $patronID = (int)$_SESSION['patron_id'];
 
+        // Save the order and use MySQL's new ID as the customer's Purchase ID.
         $insertSql = "INSERT INTO ticket_order
                       (PatronID, ScheduleID, Quantity, TicketPrice, TotalAmount, PaymentName, CardLast4)
                       VALUES (?, ?, ?, ?, ?, ?, ?)";

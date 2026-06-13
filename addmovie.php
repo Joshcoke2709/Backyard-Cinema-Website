@@ -17,6 +17,7 @@ $movieBlock = "03:00:00";
 $todayDate = date('Y-m-d');
 
 if (isset($_POST['save_movie'])) {
+    // Read one movie and any number of schedule rows submitted with it.
     $movieName = trim($_POST['movie_name']);
     $isFeatured = isset($_POST['is_featured']) ? 1 : 0;
 
@@ -27,7 +28,7 @@ if (isset($_POST['save_movie'])) {
     $posterURL = "";
     $rating = "";
 
-    // OMDb lookup
+    // Ask OMDb for the official poster and age rating.
     $apiKey = "2ae6678a";
     $omdbUrl = "https://www.omdbapi.com/?t=" . urlencode($movieName) . "&apikey=" . $apiKey;
 
@@ -46,7 +47,7 @@ if (isset($_POST['save_movie'])) {
         }
     }
 
-    // Find or insert movie
+    // Reuse an existing movie record or insert a new one to avoid duplicates.
     $findMovieSql = "SELECT MovieID FROM movie WHERE MovieName = ? LIMIT 1";
     $findMovieStmt = $conn->prepare($findMovieSql);
     $findMovieStmt->bind_param("s", $movieName);
@@ -88,7 +89,7 @@ if (isset($_POST['save_movie'])) {
                 continue;
             }
 
-            // Check overlap in schedule table
+            // Treat each showing as a three-hour block and reject cinema overlaps.
             $checkSql = "
                 SELECT ScheduleID
                 FROM schedule
@@ -108,7 +109,7 @@ if (isset($_POST['save_movie'])) {
                 continue;
             }
 
-            // If featured, reset same slot in same cinema every day
+            // Keep only one featured selection for the same cinema and time slot.
             if ($isFeatured == 1) {
                 $resetFeaturedSql = "UPDATE schedule 
                                      SET IsFeatured = 0 
@@ -147,6 +148,7 @@ $scheduleFilterMoviesResult = $conn->query($moviesSql);
 $scheduleFilterMovieID = isset($_GET['schedule_movie_id']) ? (int)$_GET['schedule_movie_id'] : 0;
 $scheduleSearchTerm = isset($_GET['schedule_search']) ? trim($_GET['schedule_search']) : "";
 
+// Load upcoming schedules for the reference tables and occupied-time JavaScript.
 $scheduleSql = "SELECT s.ScheduleID, m.MovieID, m.MovieName, m.Rating, s.Cinema, s.ShowDate, s.ShowTime, s.IsFeatured
                 FROM schedule s
                 INNER JOIN movie m ON s.MovieID = m.MovieID
@@ -177,6 +179,7 @@ if ($scheduleResult) {
             continue;
         }
 
+        // Group rows by week and cinema to make the maintenance list easier to scan.
         $weekStart = date('Y-m-d', strtotime('monday this week', strtotime($scheduleRow['ShowDate'])));
         $weekEnd = date('Y-m-d', strtotime($weekStart . ' +6 days'));
         $weekKey = $weekStart . "|" . $weekEnd;

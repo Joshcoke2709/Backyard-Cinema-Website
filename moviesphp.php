@@ -22,6 +22,7 @@ require_once "conn.php";
 
   if (!function_exists('fetch_json_url')) {
       function fetch_json_url($url) {
+          // Request movie data from an external API and return decoded JSON.
           $ch = curl_init();
           curl_setopt($ch, CURLOPT_URL, $url);
           curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -40,6 +41,7 @@ require_once "conn.php";
 
   if (!function_exists('get_working_poster')) {
       function get_working_poster($conn, $movieID, $movieName, $storedPoster, $width = 220, $height = 330) {
+          // Use the saved poster first, then repair missing posters through OMDb or TMDb.
           $badAmazonStub = !empty($storedPoster) && preg_match('/m\.media-amazon\.com\/images\/M\/[^.]*@$/', $storedPoster);
 
           if (!empty($storedPoster) && strpos($storedPoster, 'placehold.co') === false && !$badAmazonStub) {
@@ -91,6 +93,7 @@ require_once "conn.php";
 
   if (!function_exists('get_movie_plot')) {
       function get_movie_plot($movieName) {
+          // Fetch and temporarily cache the plot used in banners and popups.
           static $plotCache = [];
 
           if (isset($plotCache[$movieName])) {
@@ -139,6 +142,7 @@ require_once "conn.php";
 
   $quickSchedules = [];
   $quickToday = date('Y-m-d');
+  // Load upcoming showings once, then JavaScript narrows the quick-booking choices.
   $quickSql = "SELECT s.ScheduleID, m.MovieID, m.MovieName, s.Cinema, s.ShowDate, s.ShowTime
                FROM schedule s
                INNER JOIN movie m ON s.MovieID = m.MovieID
@@ -181,11 +185,11 @@ require_once "conn.php";
   <body>  
   <script>
   function openForm(movie) {
-    //assign movie name
+    // Load the selected title into the shared details popup.
 	document.getElementById("movie-name").value = movie;
-	//click button programmatically
+	// Trigger the OMDb lookup used by the popup.
 	document.getElementById('search-btn').click();
-	//display pop-up
+	// Display the popup and prevent the page behind it from scrolling.
 	document.getElementById("moviedetails").style.display = "block";
 	document.getElementById("result").style.display = "inline";
 
@@ -197,6 +201,7 @@ require_once "conn.php";
     document.body.style.overflow = "auto";
   }
   function scrollMovies(direction, carouselId) {
+    // Move Featured by one card and Now Showing by one visible screen.
     const carousel = document.getElementById(carouselId);
 
     if(!carousel) return;
@@ -228,6 +233,7 @@ require_once "conn.php";
   let featuredAutoplayTimer;
 
   function startFeaturedAutoplay() {
+    // Automatically advance featured movies while keeping manual controls available.
     const carousel = document.getElementById("featuredCarousel");
     if (!carousel) return;
 
@@ -544,6 +550,7 @@ require_once "conn.php";
         require_once "conn.php";
         $todayDate = date('Y-m-d');
 
+        // Staff see every movie; patrons see only movies with upcoming schedules.
         if ($isStaff) {
           $sql_query = "SELECT MovieID, MovieName, Rating, PosterURL
                         FROM movie
@@ -643,6 +650,7 @@ require_once "conn.php";
     $stmt->execute();
     $result = $stmt->get_result();
 
+    // Group today's rows so one movie card can contain several showtime pills.
     $todayMovies = [];
     if ($result) {
       while ($row = $result->fetch_assoc()) {
@@ -659,6 +667,7 @@ require_once "conn.php";
           ];
         }
 
+        // Do not repeat the same visible time when it exists in two cinemas.
         $existingTimes = array_column($todayMovies[$movieKey]['showtimes'], 'ShowTime');
         if (!in_array($row['ShowTime'], $existingTimes, true)) {
           $todayMovies[$movieKey]['showtimes'][] = [

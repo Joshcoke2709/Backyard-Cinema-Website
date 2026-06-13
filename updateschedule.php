@@ -18,6 +18,7 @@ $todayDate = date('Y-m-d');
 $editSchedule = null;
 
 if (isset($_POST['delete_schedule'])) {
+    // Delete only the selected showing, not the movie itself.
     $scheduleID = (int)$_POST['schedule_id'];
 
     if ($scheduleID > 0) {
@@ -36,6 +37,7 @@ if (isset($_POST['delete_schedule'])) {
 }
 
 if (isset($_POST['update_schedule'])) {
+    // Update an existing schedule row after checking its new time is available.
     $scheduleID = (int)$_POST['schedule_id'];
     $movieID = (int)$_POST['movie_id'];
     $cinema = trim($_POST['edit_cinema']);
@@ -47,6 +49,7 @@ if (isset($_POST['update_schedule'])) {
         $message = "Please complete all edit schedule fields.";
         $messageClass = "alert-danger";
     } else {
+        // Exclude the row being edited so it does not conflict with itself.
         $checkSql = "
             SELECT ScheduleID
             FROM schedule
@@ -91,6 +94,7 @@ if (isset($_POST['update_schedule'])) {
 }
 
 if (isset($_POST['add_schedule'])) {
+    // Add one or more new showings for a movie already in the database.
     $movieID = (int)$_POST['movie_id'];
     $isFeatured = isset($_POST['is_featured']) ? 1 : 0;
     $cinemas = $_POST['cinema'] ?? [];
@@ -115,7 +119,7 @@ if (isset($_POST['add_schedule'])) {
                 continue;
             }
 
-            // Check for overlap in same cinema/date
+            // Reject any three-hour block that overlaps in the same cinema and date.
             $checkSql = "
                 SELECT ScheduleID
                 FROM schedule
@@ -166,7 +170,7 @@ if (isset($_POST['add_schedule'])) {
     }
 }
 
-// Movie list for dropdown and right-side reference
+// Load movies for the form, filters, and reference list.
 $moviesSql = "SELECT MovieID, MovieName, Rating FROM movie ORDER BY MovieName";
 $moviesResult = $conn->query($moviesSql);
 $scheduleFilterMovieID = isset($_GET['schedule_movie_id']) ? (int)$_GET['schedule_movie_id'] : 0;
@@ -210,6 +214,7 @@ if ($scheduledResult) {
             continue;
         }
 
+        // Organize the current schedule first by week, then by cinema.
         $weekStart = date('Y-m-d', strtotime('monday this week', strtotime($scheduledRow['ShowDate'])));
         $weekEnd = date('Y-m-d', strtotime($weekStart . ' +6 days'));
         $weekKey = $weekStart . "|" . $weekEnd;
@@ -227,6 +232,7 @@ if ($scheduledResult) {
 }
 
 if (isset($_GET['edit_schedule'])) {
+    // Load the chosen row into the edit form.
     $editScheduleID = (int)$_GET['edit_schedule'];
     $editSql = "SELECT s.ScheduleID, s.MovieID, m.MovieName, m.Rating, s.Cinema, s.ShowDate, s.ShowTime, s.IsFeatured
                 FROM schedule s

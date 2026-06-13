@@ -4,6 +4,7 @@ require_once "conn.php";
 
 $search = isset($_GET['search']) ? trim($_GET['search']) : "";
 
+// Join orders to patrons, schedules, and movies so staff see readable details.
 $purchaseSql = "SELECT t.TicketID, p.PatronName, p.Email, m.MovieName,
                        s.ShowDate, s.ShowTime, s.Cinema,
                        t.Quantity, t.TicketPrice, t.TotalAmount,
@@ -14,6 +15,7 @@ $purchaseSql = "SELECT t.TicketID, p.PatronName, p.Email, m.MovieName,
                 INNER JOIN movie m ON s.MovieID = m.MovieID";
 
 if ($search !== "") {
+    // The same search value can match a movie, patron name, or Purchase ID.
     $purchaseSql .= " WHERE m.MovieName LIKE ?
                        OR p.PatronName LIKE ?
                        OR CAST(t.TicketID AS CHAR) LIKE ?";
@@ -23,6 +25,7 @@ $purchaseSql .= " ORDER BY t.CreatedAt DESC, t.TicketID DESC";
 $purchaseStmt = $conn->prepare($purchaseSql);
 
 if ($search !== "") {
+    // Binding the search text prevents it from becoming executable SQL.
     $searchLike = "%" . $search . "%";
     $purchaseStmt->bind_param("sss", $searchLike, $searchLike, $searchLike);
 }

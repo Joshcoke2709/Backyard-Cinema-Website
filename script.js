@@ -1,10 +1,12 @@
 const key = "2ae6678a";
 
+// These elements make up the movie-details search popup.
 const movieNameRef = document.getElementById("movie-name");
 const searchBtn = document.getElementById("search-btn");
 const result = document.getElementById("result");
 
 function getMovie() {
+  // Send the selected title to OMDb and build the popup from its response.
   let movieName = movieNameRef.value.trim();
   let url = `https://www.omdbapi.com/?t=${encodeURIComponent(movieName)}&apikey=${key}`;
 

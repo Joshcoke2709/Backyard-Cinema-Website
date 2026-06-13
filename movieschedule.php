@@ -8,6 +8,7 @@ if (isset($_SESSION['role']) && ($_SESSION['role'] === 'admin' || $_SESSION['rol
 }
 
 function fetch_json_url($url) {
+    // Request and decode JSON from a movie information service.
     $ch = curl_init();
     curl_setopt($ch, CURLOPT_URL, $url);
     curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
@@ -24,6 +25,7 @@ function fetch_json_url($url) {
 }
 
 function get_working_poster($conn, $movieID, $movieName, $storedPoster) {
+    // Repair missing poster links and save the working URL for later requests.
     $badAmazonStub = !empty($storedPoster) && preg_match('/m\.media-amazon\.com\/images\/M\/[^.]*@$/', $storedPoster);
 
     if (!empty($storedPoster) && strpos($storedPoster, 'placehold.co') === false && !$badAmazonStub) {
@@ -160,6 +162,7 @@ function get_working_poster($conn, $movieID, $movieName, $storedPoster) {
 $scheduleDates = [];
 $moviesFilter = [];
 $todayDate = date('Y-m-d');
+// The calendar shows only dates that have current or future screenings.
 $datesSql = "SELECT DISTINCT ShowDate FROM schedule WHERE ShowDate >= ? ORDER BY ShowDate";
 $datesStmt = $conn->prepare($datesSql);
 $datesStmt->bind_param("s", $todayDate);
@@ -204,6 +207,7 @@ if (isset($_GET['date'])) {
 }
 
 $filterActive = $selectedMovieID > 0 || $searchTerm !== "";
+// Build one prepared query for either a chosen date or filtered upcoming results.
 $sql_query = "SELECT s.ScheduleID, m.MovieID, m.MovieName, m.Rating, m.PosterURL, s.Cinema, s.ShowDate, s.ShowTime
               FROM schedule as s
               INNER JOIN movie m ON s.MovieID = m.MovieID
@@ -246,6 +250,7 @@ call_user_func_array([$stmt, 'bind_param'], $bindValues);
 $stmt->execute();
 $result = $stmt->get_result();
 
+// Group rows by movie and date so repeated screenings become pills, not cards.
 $scheduledMovies = [];
 if ($result) {
     while ($row = $result->fetch_assoc()) {
@@ -262,6 +267,7 @@ if ($result) {
             ];
         }
 
+        // Cinema is revealed during booking, so identical visible times appear once.
         $existingTimes = array_column($scheduledMovies[$scheduleKey]['showtimes'], 'ShowTime');
         if (!in_array($row['ShowTime'], $existingTimes, true)) {
             $scheduledMovies[$scheduleKey]['showtimes'][] = [
@@ -382,6 +388,7 @@ if ($result) {
 
 <script>
 document.addEventListener("DOMContentLoaded", function () {
+  // Keep the selected date at the front of the calendar after navigation.
   const dateScroller = document.querySelector(".date-scroller");
   const activeDate = dateScroller ? dateScroller.querySelector(".date-tile.active") : null;
 
